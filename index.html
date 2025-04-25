@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Подземелье вкусностей</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      height: 100%;
+      font-family: 'Arial', sans-serif;
+    }
+
+    #intro {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      height: 100vh;
+      background: url('https://r4.wallpaperflare.com/wallpaper/675/1002/325/anime-delicious-in-dungeon-hd-wallpaper-90f66add8a0139a2d2bce9883b463a3a.jpg') no-repeat center center fixed;
+      background-size: cover;
+    }
+
+    .container, .game-section {
+      width: 100%;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      scroll-snap-align: start;
+    }
+
+    .game-section {
+      background: url('https://images.unsplash.com/photo-1610144962041-5df48cbd8b69?auto=format&fit=crop&w=1470&q=80') no-repeat center center fixed;
+      background-size: cover;
+      display: none;
+    }
+
+    .title {
+      animation: slideDown 2s ease-out forwards;
+      background: url('https://upload.wikimedia.org/wikipedia/commons/6/62/Dungeon_Meshi_Logo.png') no-repeat center top;
+      background-size: contain;
+      height: 200px;
+      width: 100%;
+      margin-top: 100px;
+    }
+
+    .enter-button {
+      padding: 18px 40px;
+      background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 24px;
+      cursor: pointer;
+      text-transform: uppercase;
+      font-weight: bold;
+      box-shadow: 0 4px 0 #7f0000, 0 6px 20px rgba(255, 0, 0, 0.4);
+      animation: slideUp 1.5s ease-out forwards;
+      margin-bottom: 80px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+      font-family: 'MedievalSharp', cursive;
+      letter-spacing: 2px;
+      text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+      border: 2px solid #ff5252;
+      z-index: 10;
+      position: relative;
+    }
+
+    .enter-button.ready {
+      animation: pulse 1.5s infinite;
+    }
+
+    .enter-button:hover {
+      background: linear-gradient(135deg, #f44336 0%, #c62828 100%);
+      box-shadow: 0 4px 0 #7f0000, 0 10px 25px rgba(255, 0, 0, 0.6);
+      transform: scale(1.05);
+    }
+
+    .enter-button:active {
+      transform: translateY(4px);
+      box-shadow: 0 1px 0 #7f0000, 0 3px 15px rgba(255, 0, 0, 0.4);
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 4px 0 #7f0000, 0 10px 25px rgba(255, 0, 0, 0.6), 0 0 0 0 rgba(255, 0, 0, 0.7); }
+      70% { box-shadow: 0 4px 0 #7f0000, 0 10px 25px rgba(255, 0, 0, 0.6), 0 0 0 15px rgba(255, 0, 0, 0); }
+      100% { box-shadow: 0 4px 0 #7f0000, 0 10px 25px rgba(255, 0, 0, 0.6), 0 0 0 0 rgba(255, 0, 0, 0); }
+    }
+
+    @keyframes slideDown {
+      from { transform: translateY(-100%); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(100%); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .audio-control {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+      background-color: rgba(255, 255, 255, 0.7);
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .audio-control i {
+      font-size: 20px;
+      color: #333;
+    }
+
+    #transitionVideo {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 9999;
+      display: none;
+      background: black;
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="container" id="intro">
+    <div class="title"></div>
+    <button class="enter-button" id="dungeonButton" onclick="enterDungeon()">Entering the dungeon</button>
+  </div>
+
+  <div class="audio-control" onclick="toggleAudio()">
+    <i class="fas fa-volume-up"></i>
+  </div>
+
+  <audio id="bgMusic" loop autoplay>
+    <source src="audio/заставка.mp3" type="audio/mpeg">
+    Ваш браузер не поддерживает аудио элемент.
+  </audio>
+
+  <video id="transitionVideo" muted>
+    <source src="video/v1.mp4" type="video/mp4">
+  </video>
+
+  <div class="game-section" id="gameSection">
+    <h1 style="color: white; font-size: 3em;">DM</h1>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const button = document.getElementById('dungeonButton');
+      const audio = document.getElementById('bgMusic');
+
+      setTimeout(() => {
+        button.classList.add('ready');
+      }, 100);
+
+      audio.muted = false;
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(error => {
+          console.log('Автовоспроизведение заблокировано. Нажмите на страницу для включения звука.');
+          document.body.addEventListener('click', () => {
+            audio.play();
+          }, { once: true });
+        });
+      }
+    });
+
+    function enterDungeon() {
+      const video = document.getElementById('transitionVideo');
+      const intro = document.getElementById('intro');
+      const game = document.getElementById('gameSection');
+
+      video.style.display = 'block';
+      video.play();
+      document.body.style.overflow = 'hidden';
+
+      video.onended = function () {
+        intro.style.display = 'none';
+        game.style.display = 'flex';
+        video.style.display = 'none';
+        document.body.style.overflow = 'auto';
+      };
+    }
+
+    function toggleAudio() {
+      const audio = document.getElementById('bgMusic');
+      const icon = document.querySelector('.audio-control i');
+      if (audio.paused) {
+        audio.play();
+        icon.className = 'fas fa-volume-up';
+      } else {
+        audio.pause();
+        icon.className = 'fas fa-volume-mute';
+      }
+    }
+  </script>
+</body>
+</html>
